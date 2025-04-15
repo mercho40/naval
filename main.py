@@ -1,43 +1,101 @@
-# Oliver --> 
-# Pepo --> 
-# Mercho --> 
+# Oliver --> hacer disparar y terminado
+# Pepo --> Hacer imprimir_tablero
+# Mercho --> Hacer generar_tablero y preguntar
 import random
 
-def crear_tablero(N):
-    # Crea un tablero vacío de NxN, donde cada celda es 0 (sin barco)
-    return [[0 for _ in range(N)] for _ in range(N)]
 
-  #def ubicar_barcos_por_codigo(tablero, posiciones_barcos):
-    # Ubica los barcos según las posiciones dadas
-   # for fila, columna in posiciones_barcos:
-     #   tablero[fila][columna] = 1  # 1 representa un barco
-    #return tablero
+def generar_tablero(n):
+    """
+    Genera un tablero aleatorio de tamaño n x n.
 
-def ubicar_barcos_aleatoriamente(tablero, cantidad_barcos):
-    N = len(tablero)
-    ubicados = 0
-    while ubicados < cantidad_barcos:
-        fila = random.randint(0, N-1)
-        columna = random.randint(0, N-1)
-        if tablero[fila][columna] == 0:
-            tablero[fila][columna] = 1
-            ubicados += 1
-    return tablero
+    Esta función crea una matriz cuadrada donde cada celda tiene
+    un valor booleano. Cada celda tiene aproximadamente un 15%
+    de probabilidad de ser True y un 85% de ser False.
 
-def imprimir_tablero(tablero):
-    for fila in tablero:
-        print(" afa".join(str(celda) for celda in fila))
+    Args:
+        n: Entero que define el tamaño del tablero (n x n).
 
-# Ejemplo de uso:
-N = 5
-tablero = ubicar_barcos_aleatoriamente(tablero, 5)
+    Returns:
+        list[list[bool]]: Matriz cuadrada con valores booleanos aleatorios.
+    """
+    board: list[list[bool]] = [[False for _ in range(n)] for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if random.random() >= 0.85:
+                board[i][j] = True
+            else:
+                board[i][j] = False
+    return board
 
-# Opción 1: Asignar barcos por código
-barcos_por_codigo = [(0, 0), (2, 3), (4, 1)]  # posiciones manuales
-tablero = ubicar_barcos_por_codigo(tablero, barcos_por_codigo)
 
-# Opción 2: Asignar barcos aleatoriamente
-# tablero = ubicar_barcos_aleatoriamente(tablero, 5)
+def disparar(tablero, Y, X):
+    return 0
 
-# Mostrar el tablero
-imprimir_tablero(tablero)
+
+def preguntar(n, disparos):
+    """
+    Solicita y valida coordenadas de disparo al usuario.
+
+    Esta función pide al usuario ingresar coordenadas X e Y, validando que:
+    - Sean valores numéricos
+    - Estén dentro del rango permitido (entre 1 y n)
+    - No hayan sido utilizados previamente
+
+    Args:
+        n (int): Tamaño del tablero (n x n)
+        disparos (list): Lista de coordenadas ya disparadas
+
+    Returns:
+        tuple: Coordenadas validadas en formato (y, x)
+    """
+    while True:
+        y = input("Cordenada y: ")
+        x = input("Cordenada X: ")
+        if x.isnumeric() and y.isnumeric():
+            if int(x) <= n and int(y) <= n and int(x) >= 1 and int(y) >= 1:
+                return int(y), int(x)
+            else:
+                print("Valor fuera de rango")
+        else:
+            print("Formato incorrecto")
+        if (int(x), int(y)) in disparos:
+            print("Ya disparaste a esa coordenada")
+
+
+def imprimir_tablero(tablero, disparos):
+    return 0
+
+
+def terminado(tablero, intentosFaltantes):
+    return 0
+
+
+while True:
+    n = input("Tamaño del tablero: ")
+    if n.isnumeric():
+        n = int(n)
+        break
+    else:
+        print("Formato incorrecto")
+intentosFaltantes = 20
+fallidos = 0
+aciertos = 0
+disparos: list[tuple[int, int]] = []
+tablero = generar_tablero(n)
+while True:
+    imprimir_tablero(tablero, disparos)
+    y, x = preguntar(n, disparos)
+    intentosFaltantes -= 1
+    disparos.append((y, x))
+    if disparar(tablero, y - 1, x - 1):
+        print("Tiro acertado")
+        aciertos += 1
+    else:
+        print("Tiro fallido")
+        fallidos += 1
+    if terminado(tablero, intentosFaltantes):
+        print("Fin del juego, ")
+        break
+print(f"Disparos: {len(disparos)}")
+print(f"Aciertos: {aciertos}")
+print(f"Fallos: {fallidos}")
