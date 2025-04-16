@@ -29,7 +29,7 @@ def generar_tablero(n):
 
 
 def disparar(tablero, Y, X):
-    """ Dispara a una coordenada especificada en el tablero. 
+    """Dispara a una coordenada especificada en el tablero.
 
     Esta función verifica si la coordenada (Y, X) es un disparo acertado:
     - si fue un disparo acertado o fallido
@@ -45,11 +45,11 @@ def disparar(tablero, Y, X):
     Raises:
         ValueError: Si las coordenadas están fuera del rango del tablero
     """
-    if tablero[Y][X]: # hay un barco? (Expected answer --> true / false)
-        tablero[Y][X] = False # se hunde el barco (Había un barco en esas coordenadas)
-        return True # Te devuelve que le pegaste al barco
-    return False # no hay barco
-
+    if tablero[Y][X]:  # hay un barco? (Expected answer --> true / false)
+        # se hunde el barco (Había un barco en esas coordenadas)
+        # tablero[Y][X] = False
+        return True  # Te devuelve que le pegaste al barco
+    return False  # no hay barco
 
 
 def preguntar(n, disparos):
@@ -87,7 +87,7 @@ def imprimir_tablero(tablero, disparos):
 
 
 def terminado(tablero, intentosFaltantes):
-    """ Esta funcion verifica si termino o no el juego.
+    """Esta funcion verifica si termino o no el juego.
     - Si se acabo el numero de intentos
     - Si se hundieron todos los barcos
 
@@ -126,6 +126,7 @@ while True:
     intentosFaltantes -= 1
     disparos.append((y, x))
     if disparar(tablero, y - 1, x - 1):
+        tablero[y - 1][x - 1] = False
         print("Tiro acertado")
         aciertos += 1
     else:
