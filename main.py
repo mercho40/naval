@@ -1,6 +1,3 @@
-# Oliver --> hacer disparar y terminado
-# Pepo --> Hacer imprimir_tablero
-# Mercho --> Hacer generar_tablero y preguntar
 import random
 
 
@@ -18,14 +15,16 @@ def generar_tablero(n):
     Returns:
         list[list[bool]]: Matriz cuadrada con valores booleanos aleatorios.
     """
-    board: list[list[bool]] = [[False for _ in range(n)] for _ in range(n)]
+    barcos = 0
+    tablero: list[list[bool]] = [[False for _ in range(n)] for _ in range(n)]
     for i in range(n):
         for j in range(n):
             if random.random() >= 0.85:
-                board[i][j] = True
+                tablero[i][j] = True
+                barcos += 1
             else:
-                board[i][j] = False
-    return board
+                tablero[i][j] = False
+    return tablero, barcos
 
 
 def disparar(tablero, Y, X):
@@ -69,43 +68,68 @@ def preguntar(n, disparos):
         tuple: Coordenadas validadas en formato (y, x)
     """
     while True:
-        y = input("Cordenada y: ")
-        x = input("Cordenada X: ")
+        y = input("Coordenada y: ")
+        x = input("Coordenada X: ")
         if x.isnumeric() and y.isnumeric():
             if int(x) <= n and int(y) <= n and int(x) >= 1 and int(y) >= 1:
-                return int(y), int(x)
+                if (int(y) - 1, int(x) - 1) in disparos:
+                    print("Ya disparaste a esa coordenada")
+                else:
+                    return int(y) - 1, int(x) - 1
             else:
                 print("Valor fuera de rango")
         else:
             print("Formato incorrecto")
-        if (int(x), int(y)) in disparos:
-            print("Ya disparaste a esa coordenada")
 
 
-def imprimir_tablero(tablero, disparos):
-    return 0
+def imprimir_tablero(tablero, disparos, intentosFaltantes, barcos):
+    """Imprime el tablero de juego en la consola.
 
-
-def terminado(tablero, intentosFaltantes):
-    """Esta funcion verifica si termino o no el juego.
-    - Si se acabo el numero de intentos
-    - Si se hundieron todos los barcos
+    Esta función muestra el estado actual del tablero, donde cada celda
+    puede representar diferentes estados:
+    - Un barco no atacado
+    - Una celda vacía
+    - Una celda atacada
 
     Args:
-        tablero (list): Tablero de juego
+        tablero (list): Una matriz (lista de listas) que representa el tablero de juego.
+    """
+
+    for i in range(len(tablero)):
+        for j in range(len(tablero[i])):
+            if (i, j) in disparos:
+                print("X", end=" ")
+            else:
+                print("O", end=" ")
+        print()
+
+    print("Barcos faltantes: ", barcos)
+    print("Intentos faltantes: ", intentosFaltantes)
+
+
+def terminado(intentosFaltantes, barcos):
+    """Verifica si el juego ha terminado.
+
+    Esta función determina si el juego ha terminado por alguna de estas razones:
+    - Se agotaron los intentos disponibles
+    - Se hundieron todos los barcos
+
+    Args:
         intentosFaltantes (int): Número de intentos restantes
+        barcos (int): Número de barcos restantes
+
     Returns:
         bool: True si el juego ha terminado, False en caso contrario
     """
-    if intentosFaltantes == 0:
+    if intentosFaltantes <= 0:
         print("Te quedaste sin intentos")
-        return False
-    for fila in tablero:
-        for casilla in fila:
-            if casilla:
-                print("Hay barcos en el tablero")
-                return True
-        return False
+        return True
+
+    if barcos <= 0:
+        print("¡Hundiste todos los barcos!")
+        return True
+
+    return False
 
 
 while True:
@@ -115,25 +139,26 @@ while True:
         break
     else:
         print("Formato incorrecto")
-intentosFaltantes = 20
+intentosFaltantes = int(0.8 * n * n)
 fallidos = 0
 aciertos = 0
 disparos: list[tuple[int, int]] = []
-tablero = generar_tablero(n)
+tablero, barcos = generar_tablero(n)
 while True:
-    imprimir_tablero(tablero, disparos)
+    imprimir_tablero(tablero, disparos, intentosFaltantes, barcos)
     y, x = preguntar(n, disparos)
     intentosFaltantes -= 1
     disparos.append((y, x))
-    if disparar(tablero, y - 1, x - 1):
-        tablero[y - 1][x - 1] = False
+    if disparar(tablero, y, x):
+        tablero[y][x] = False
+        barcos -= 1
         print("Tiro acertado")
         aciertos += 1
     else:
         print("Tiro fallido")
         fallidos += 1
-    if terminado(tablero, intentosFaltantes):
-        print("Fin del juego, ")
+    if terminado(intentosFaltantes, barcos):
+        print("Fin del juego")
         break
 print(f"Disparos: {len(disparos)}")
 print(f"Aciertos: {aciertos}")
