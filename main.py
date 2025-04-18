@@ -87,12 +87,14 @@ def imprimir_tablero(tablero, disparos, intentosFaltantes, barcos):
 
     Esta función muestra el estado actual del tablero, donde cada celda
     puede representar diferentes estados:
-    - Un barco no atacado
-    - Una celda vacía
-    - Una celda atacada
+    - 'X' para una celda atacada
+    - 'O' para una celda no atacada
 
     Args:
-        tablero (list): Una matriz (lista de listas) que representa el tablero de juego.
+        tablero (list): Matriz que representa el tablero de juego.
+        disparos (list): Lista de coordenadas donde se ha disparado.
+        intentosFaltantes (int): Número de intentos restantes.
+        barcos (int): Número de barcos restantes por hundir.
     """
 
     for i in range(len(tablero)):
